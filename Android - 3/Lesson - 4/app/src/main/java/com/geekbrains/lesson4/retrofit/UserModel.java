@@ -3,7 +3,7 @@ package com.geekbrains.lesson4.retrofit;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class RetrofitModel {
+public class UserModel {
     @SerializedName("login")
     @Expose
     private String login;

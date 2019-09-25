@@ -55,12 +55,17 @@ public class RetrofitMainActivity extends AppCompatActivity {
             return;
         }
         // Подготовили вызов на сервер
-        Call<RetrofitModel> call = restAPI.loadUsers(editText.getText().toString());
+//        Call<List<UserModel>> call = restAPI.loadUsers();
+//        Call<UserModel> call = restAPI.loadUsers(editText.getText().toString());
+        Call<List<RepoModel>> call = restAPI.loadRepos(editText.getText().toString());
+
         if (isNetworkSuccess()) {
             // Запускаем
             try {
                 progressBar.setVisibility(View.VISIBLE);
-                downloadOneUser(call);
+//                downloadUsers(call);
+//                downloadOneUser(call);
+                downloadOneUserRepos(call);
             } catch (IOException e) {
                 e.printStackTrace();
                 mInfoTextView.setText(e.getMessage());
@@ -77,18 +82,18 @@ public class RetrofitMainActivity extends AppCompatActivity {
         return networkinfo != null && networkinfo.isConnected();
     }
 
-    private void downloadUsers(Call<List<RetrofitModel>> call) throws IOException {
-        call.enqueue(new Callback<List<RetrofitModel>>() {
+    private void downloadUsers(Call<List<UserModel>> call) throws IOException {
+        call.enqueue(new Callback<List<UserModel>>() {
             @Override
-            public void onResponse(Call<List<RetrofitModel>> call, Response<List<RetrofitModel>> response) {
+            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
                 if (response.isSuccessful()) {
                     //String data = response.body().toString();
-                    RetrofitModel curRetrofitModel = null;
+                    UserModel curUserModel = null;
                     for (int i = 0; i < response.body().size(); i++) {
-                        curRetrofitModel = response.body().get(i);
-                        mInfoTextView.append("\nLogin = " + curRetrofitModel.getLogin() +
-                                "\nId = " + curRetrofitModel.getId() +
-                                "\nURI" + curRetrofitModel.getAvatarUrl() +
+                        curUserModel = response.body().get(i);
+                        mInfoTextView.append("\nLogin = " + curUserModel.getLogin() +
+                                "\nId = " + curUserModel.getId() +
+                                "\nURI" + curUserModel.getAvatarUrl() +
                                 "\n-----------------");
                     }
                 } else {
@@ -99,7 +104,7 @@ public class RetrofitMainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<RetrofitModel>> call, Throwable t) {
+            public void onFailure(Call<List<UserModel>> call, Throwable t) {
                 System.out.println("onFailure " + t);
                 mInfoTextView.setText("onFailure " + t.getMessage());
                 progressBar.setVisibility(View.GONE);
@@ -107,16 +112,16 @@ public class RetrofitMainActivity extends AppCompatActivity {
         });
     }
 
-    private void downloadOneUser(Call<RetrofitModel> call) throws IOException {
-        call.enqueue(new Callback<RetrofitModel>() {
+    private void downloadOneUser(Call<UserModel> call) throws IOException {
+        call.enqueue(new Callback<UserModel>() {
             @Override
-            public void onResponse(Call<RetrofitModel> call, Response<RetrofitModel> response) {
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful()) {
-                    RetrofitModel curRetrofitModel = null;
-                        curRetrofitModel = response.body();
-                        mInfoTextView.append("\nLogin = " + curRetrofitModel.getLogin() +
-                                "\nId = " + curRetrofitModel.getId() +
-                                "\nURI" + curRetrofitModel.getAvatarUrl() +
+                    UserModel curUserModel = null;
+                        curUserModel = response.body();
+                        mInfoTextView.append("\nLogin = " + curUserModel.getLogin() +
+                                "\nId = " + curUserModel.getId() +
+                                "\nURI" + curUserModel.getAvatarUrl() +
                                 "\n-----------------");
 
 
@@ -128,7 +133,34 @@ public class RetrofitMainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<RetrofitModel> call, Throwable t) {
+            public void onFailure(Call<UserModel> call, Throwable t) {
+                System.out.println("onFailure " + t);
+                mInfoTextView.setText("onFailure " + t.getMessage());
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void downloadOneUserRepos(Call<List<RepoModel>> call) throws IOException {
+        call.enqueue(new Callback<List<RepoModel>>() {
+            @Override
+            public void onResponse(Call<List<RepoModel>> call, Response<List<RepoModel>> response) {
+                if (response.isSuccessful()) {
+                    RepoModel curRepoModel = null;
+                    for (int i = 0; i < response.body().size(); i++) {
+                        curRepoModel = response.body().get(i);
+                        mInfoTextView.append(curRepoModel.getName() + "\n");
+                    }
+
+                } else {
+                    System.out.println("onResponse error: " + response.code());
+                    mInfoTextView.setText("onResponse error: " + response.code());
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<List<RepoModel>> call, Throwable t) {
                 System.out.println("onFailure " + t);
                 mInfoTextView.setText("onFailure " + t.getMessage());
                 progressBar.setVisibility(View.GONE);
