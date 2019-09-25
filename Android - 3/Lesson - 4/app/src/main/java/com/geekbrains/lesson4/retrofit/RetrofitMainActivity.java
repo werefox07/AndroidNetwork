@@ -55,12 +55,12 @@ public class RetrofitMainActivity extends AppCompatActivity {
             return;
         }
         // Подготовили вызов на сервер
-        Call<List<RetrofitModel>> call = restAPI.loadUsers();
+        Call<RetrofitModel> call = restAPI.loadUsers(editText.getText().toString());
         if (isNetworkSuccess()) {
             // Запускаем
             try {
                 progressBar.setVisibility(View.VISIBLE);
-                downloadOneUrl(call);
+                downloadOneUser(call);
             } catch (IOException e) {
                 e.printStackTrace();
                 mInfoTextView.setText(e.getMessage());
@@ -77,7 +77,7 @@ public class RetrofitMainActivity extends AppCompatActivity {
         return networkinfo != null && networkinfo.isConnected();
     }
 
-    private void downloadOneUrl(Call<List<RetrofitModel>> call) throws IOException {
+    private void downloadUsers(Call<List<RetrofitModel>> call) throws IOException {
         call.enqueue(new Callback<List<RetrofitModel>>() {
             @Override
             public void onResponse(Call<List<RetrofitModel>> call, Response<List<RetrofitModel>> response) {
@@ -106,5 +106,36 @@ public class RetrofitMainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void downloadOneUser(Call<RetrofitModel> call) throws IOException {
+        call.enqueue(new Callback<RetrofitModel>() {
+            @Override
+            public void onResponse(Call<RetrofitModel> call, Response<RetrofitModel> response) {
+                if (response.isSuccessful()) {
+                    RetrofitModel curRetrofitModel = null;
+                        curRetrofitModel = response.body();
+                        mInfoTextView.append("\nLogin = " + curRetrofitModel.getLogin() +
+                                "\nId = " + curRetrofitModel.getId() +
+                                "\nURI" + curRetrofitModel.getAvatarUrl() +
+                                "\n-----------------");
+
+
+                } else {
+                    System.out.println("onResponse error: " + response.code());
+                    mInfoTextView.setText("onResponse error: " + response.code());
+                }
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<RetrofitModel> call, Throwable t) {
+                System.out.println("onFailure " + t);
+                mInfoTextView.setText("onFailure " + t.getMessage());
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
+
 
 }

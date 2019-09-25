@@ -12,6 +12,6 @@ public interface Api {
     Call<List<RetrofitModel>> loadUsers();
 
     @GET("users/{user}")
-    Call<List<RetrofitModel>> loadUsers(@Path("user") String user);
+    Call<RetrofitModel> loadUsers(@Path("user") String user);
 
 }
